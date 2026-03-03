@@ -400,7 +400,7 @@ class APIHandler(BaseHTTPRequestHandler):
             
             password = data.get('password', '')
             
-            if password == 'your-default-password':
+            if password == 'admin123':
                 secret = get_api_secret()
                 self.send_json_response(200, {'success': True, 'token': secret})
             else:
