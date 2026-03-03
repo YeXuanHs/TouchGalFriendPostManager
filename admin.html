@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoraGal - 后台管理</title>
+    <link rel="icon" href="/favicon.ico">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.4s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo { text-align: center; margin-bottom: 30px; }
+        .logo img { width: 60px; height: 60px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        
+        .title {
+            font-size: 28px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle { font-size: 14px; color: #64748b; text-align: center; margin-bottom: 30px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 8px; }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-input[readonly] {
+            background-color: #f1f5f9;
+            cursor: not-allowed;
+            border-color: #cbd5e1;
+        }
+
+        /* 开关样式 */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        .toggle-input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e2e8f0;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 24px;
+            width: 24px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        .toggle-input:checked + .toggle-slider {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .toggle-input:checked + .toggle-slider:before {
+            transform: translateX(30px);
+        }
+        
+        .form-input:focus, .form-textarea:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .form-textarea { resize: vertical; min-height: 80px; font-family: inherit; }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+        }
+        
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,0.4); }
+        .btn-full { width: 100%; }
+        .btn-secondary { background: #f8fafc; color: #1e293b; border: 2px solid #e2e8f0; }
+        .btn-secondary:hover { background: #f1f5f9; }
+        .btn-danger { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .btn-danger:hover { box-shadow: 0 8px 20px rgba(245,87,108,0.4); }
+        .btn-sm { padding: 8px 16px; font-size: 14px; }
+        
+        .error { background: #fee2e2; color: #dc2626; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: none; }
+        .success { background: #dcfce7; color: #16a34a; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; display: none; }
+        
+        .menu { display: grid; gap: 15px; }
+        
+        .menu-item {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .menu-item:hover { background: #f1f5f9; border-color: #667eea; }
+        .menu-icon { font-size: 24px; }
+        .menu-text { font-size: 16px; font-weight: 600; color: #1e293b; }
+        
+        .hidden { display: none !important; }
+        
+        .friend-list { display: grid; gap: 15px; margin-bottom: 20px; }
+        
+        .friend-card {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .friend-card:hover { border-color: #667eea; }
+        
+        .friend-avatar { width: 60px; height: 60px; border-radius: 12px; object-fit: cover; flex-shrink: 0; }
+        .friend-info { flex: 1; min-width: 0; }
+        .friend-name { font-size: 18px; font-weight: 700; color: #1e293b; margin-bottom: 5px; }
+        .friend-label { font-size: 14px; color: #64748b; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .friend-link { font-size: 13px; color: #667eea; text-decoration: none; }
+        .friend-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        
+        .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 1000;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .modal-header { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #1a1a2e; }
+        .modal-footer { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-footer .btn { flex: 1; }
+        
+        .loading { text-align: center; padding: 40px; color: #64748b; }
+        .empty { text-align: center; padding: 40px; color: #64748b; }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .back-btn {
+            padding: 8px 16px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            color: #1e293b;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover { background: #f1f5f9; }
+        
+        .article-list { display: flex; flex-direction: column; gap: 15px; }
+        .card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .card-content { flex: 1; }
+        .card-content h3 { margin: 0 0 10px 0; font-size: 18px; color: #1e293b; }
+        .card-meta { margin: 5px 0; color: #64748b; font-size: 14px; }
+        .card-desc { margin: 10px 0 0 0; color: #475569; font-size: 14px; }
+        .card-actions { display: flex; gap: 10px; margin-left: 20px; }
+        .btn-small { padding: 8px 16px; font-size: 14px; }
+        .empty { text-align: center; padding: 40px; color: #94a3b8; }
+        
+        #article-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; background: #f1f5f9; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; color: #64748b; transition: all 0.2s; }
+        .tab-btn:hover { background: #e2e8f0; }
+        .tab-btn.active { background: #667eea; color: white; }
+        
+        .form-textarea { width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; font-family: inherit; resize: vertical; min-height: 100px; }
+        .form-textarea:focus { outline: none; border-color: #667eea; }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <div class="logo">
+            <img src="/favicon.ico" alt="Logo">
+        </div>
+        <h1 class="title">SoraGal</h1>
+        <p class="subtitle">后台管理</p>
+        
+        <div id="login-form">
+            <div class="error" id="login-error"></div>
+            <div class="form-group">
+                <label class="form-label">密码</label>
+                <input type="password" class="form-input" id="login-password" placeholder="请输入管理员密码">
+            </div>
+            <button class="btn btn-full" onclick="login()">登录</button>
+        </div>
+        
+        <div id="admin-panel" class="hidden">
+            <div class="success" id="success-message"></div>
+            
+            <div id="menu-panel">
+                <div class="menu">
+                    <div class="menu-item" onclick="showPage('friend')">
+                        <span class="menu-icon">🔗</span>
+                        <span class="menu-text">友链管理</span>
+                    </div>
+                    <div class="menu-item" onclick="showPage('article')">
+                        <span class="menu-icon">📝</span>
+                        <span class="menu-text">文章管理</span>
+                    </div>
+                    <div class="menu-item" onclick="showPage('settings')">
+                        <span class="menu-icon">⚙️</span>
+                        <span class="menu-text">系统设置</span>
+                    </div>
+                    <div class="menu-item" onclick="showPage('password')">
+                        <span class="menu-icon">🔐</span>
+                        <span class="menu-text">修改密码</span>
+                    </div>
+
+                </div>
+                <button class="btn btn-full" onclick="showConfirm('确定要重新构建吗？这需要几分钟时间。', rebuild)" style="margin-top: 20px;">🔄 重新构建</button>
+                <button class="btn btn-danger btn-full" onclick="logout()" style="margin-top: 10px;">退出登录</button>
+            </div>
+            
+            <div id="friend-panel" class="hidden">
+                <div class="page-header">
+                    <button class="back-btn" onclick="showPage('menu')">← 返回</button>
+                    <h2>友链管理</h2>
+                    <div style="width: 60px;"></div>
+                </div>
+                <div class="error" id="friend-error"></div>
+                <div id="friend-list" class="friend-list">
+                    <div class="loading">加载中...</div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn" onclick="showAddModal()">+ 添加友链</button>
+                    <button class="btn btn-secondary" onclick="exportJson()">导出 JSON</button>
+                    <button class="btn btn-secondary" onclick="showImportConfirm()">导入 JSON</button>
+                </div>
+            </div>
+            
+            <div id="password-panel" class="hidden">
+                <div class="page-header">
+                    <button class="back-btn" onclick="showPage('menu')">← 返回</button>
+                    <h2>修改密码</h2>
+                    <div style="width: 60px;"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">新密码</label>
+                    <input type="password" class="form-input" id="new-password" placeholder="请输入新密码">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">确认新密码</label>
+                    <input type="password" class="form-input" id="confirm-password" placeholder="请再次输入新密码">
+                </div>
+                <button class="btn btn-full" onclick="changePassword()">确认修改</button>
+            </div>
+            
+            <div id="settings-panel" class="hidden">
+                <div class="page-header">
+                    <button class="back-btn" onclick="showPage('menu')">← 返回</button>
+                    <h2>系统设置</h2>
+                    <div style="width: 60px;"></div>
+                </div>
+                <div class="error" id="settings-error"></div>
+                <div class="success" id="settings-success"></div>
+                <div class="form-group">
+                    <label class="form-label">S3 API 域名</label>
+                    <input type="text" class="form-input" id="s3-domain" placeholder="例如: https://s3api.example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">默认头像 URL</label>
+                    <input type="text" class="form-input" id="default-avatar" placeholder="例如: https://s3api.example.com/avatar/default.jpg" readonly style="background-color: #f5f5f5; color: #999; cursor: not-allowed;">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">默认作者名</label>
+                    <input type="text" class="form-input" id="default-author" value="Sora.">
+                </div>
+                <button class="btn btn-full" onclick="saveSettings()">保存设置</button>
+            </div>
+            
+            <div id="article-panel" class="hidden">
+                <div class="page-header">
+                    <button class="back-btn" onclick="showPage('menu')">← 返回</button>
+                    <h2>文章管理</h2>
+                    <div style="width: 60px;"></div>
+                </div>
+                <div class="error" id="article-error"></div>
+                <div class="success" id="article-success"></div>
+                <div id="article-tabs">
+                    <button class="tab-btn active" onclick="switchTab('categories')">栏目管理</button>
+                    <button class="tab-btn" onclick="switchTab('posts')">文章管理</button>
+                </div>
+                <div id="categories-panel">
+                    <div class="action-buttons">
+                        <button class="btn" onclick="showAddCategoryModal()">+ 添加栏目</button>
+                    </div>
+                    <div id="category-list" class="article-list">
+                        <div class="loading">加载中...</div>
+                    </div>
+                </div>
+                <div id="posts-panel" class="hidden">
+                    <div class="form-group">
+                        <label class="form-label">选择栏目</label>
+                        <select class="form-input" id="post-category-select" onchange="loadPosts()">
+                            <option value="">全部</option>
+                        </select>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn" onclick="showAddPostModal()">+ 添加文章</button>
+                    </div>
+                    <div id="post-list" class="article-list">
+                        <div class="loading">加载中...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="category-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header" id="category-modal-title">添加栏目</div>
+            <div class="form-group">
+                <label class="form-label">排序序号</label>
+                <input type="number" class="form-input" id="category-order" placeholder="数字越小越靠前">
+            </div>
+            <div class="form-group">
+                <label class="form-label">文件夹名（英文）</label>
+                <input type="text" class="form-input" id="category-name" placeholder="例如: notice">
+            </div>
+            <div class="form-group">
+                <label class="form-label">显示名称（中文）</label>
+                <input type="text" class="form-input" id="category-label" placeholder="例如: 公告">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('category-modal').classList.add('hidden')">取消</button>
+                <button class="btn" onclick="saveCategory()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="post-modal" class="modal hidden">
+        <div class="modal-content" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+            <div class="modal-header" id="post-modal-title">添加文章</div>
+            <div class="form-group">
+                <label class="form-label">标题</label>
+                <input type="text" class="form-input" id="post-title" placeholder="请输入文章标题">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Slug</label>
+                <input type="text" class="form-input" id="post-slug" placeholder="请输入自定义 slug" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">栏目</label>
+                <select class="form-input" id="post-category">
+                    <option value="">请选择栏目</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">封面图 URL</label>
+                <input type="url" class="form-input" id="post-banner" placeholder="请输入封面图片链接">
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述</label>
+                <textarea class="form-textarea" id="post-description" placeholder="请输入文章描述"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">发布者</label>
+                <input type="text" class="form-input" id="post-author" placeholder="请输入发布者名称" value="Sora.">
+            </div>
+            <div class="form-group">
+                <label class="form-label">发布者用户 ID</label>
+                <input type="number" class="form-input" id="post-author-id" placeholder="请输入发布者用户 ID" value="1">
+            </div>
+            <div class="form-group">
+                <label class="form-label">头像 URL</label>
+                <input type="url" class="form-input" id="post-avatar" placeholder="请输入发布者头像链接">
+            </div>
+            <div class="form-group">
+                <label class="form-label">作者主页</label>
+                <input type="url" class="form-input" id="post-author-homepage" placeholder="请输入作者主页链接" value="https://your-website.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">
+                    是否置顶
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="post-pin" class="toggle-input">
+                        <span class="toggle-slider"></span>
+                    </div>
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="form-label">发布日期</label>
+                <input type="date" class="form-input" id="post-date">
+            </div>
+            <div class="form-group">
+                <label class="form-label">内容（Markdown格式）</label>
+                <textarea class="form-textarea" id="post-content" style="min-height: 300px;" placeholder="请输入文章内容，支持Markdown格式"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="document.getElementById('post-modal').classList.add('hidden')">取消</button>
+                <button class="btn" onclick="savePost()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="friend-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header" id="modal-title">添加友链</div>
+            <div class="form-group">
+                <label class="form-label">名称</label>
+                <input type="text" class="form-input" id="friend-name" placeholder="请输入友链名称">
+            </div>
+            <div class="form-group">
+                <label class="form-label">头像 URL</label>
+                <input type="url" class="form-input" id="friend-avatar" placeholder="请输入头像图片链接">
+            </div>
+            <div class="form-group">
+                <label class="form-label">描述</label>
+                <textarea class="form-textarea" id="friend-label" placeholder="请输入友链描述"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">链接 URL</label>
+                <input type="url" class="form-input" id="friend-link" placeholder="请输入网站链接">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn" onclick="saveFriend()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="confirm-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">确认</div>
+            <p id="confirm-message" style="margin-bottom: 20px; color: #64748b;"></p>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()">取消</button>
+                <button class="btn btn-danger" id="confirm-ok-btn">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <input type="file" id="import-file" style="display: none;" accept=".json" onchange="handleImportFile(event)">
+    
+    <script>
+        var defaultPassword = 'admin123';
+        var loginKey = 'admin_logged_in';
+        var passwordKey = 'admin_password';
+        var tokenKey = 'admin_token';
+        var apiBase = 'http://192.168.2.12:8082/api';
+        var friends = [];
+        var editingIndex = -1;
+        var categories = [];
+        var posts = [];
+        var currentTab = 'categories';
+        var editingCategory = null;
+        var editingPost = null;
+        var apiToken = localStorage.getItem(tokenKey) || '';
+        
+        function getStoredPassword() {
+            return localStorage.getItem(passwordKey) || defaultPassword;
+        }
+        
+        function setStoredPassword(password) {
+            localStorage.setItem(passwordKey, password);
+        }
+        
+        function isLoggedIn() {
+            return localStorage.getItem(loginKey) === 'true';
+        }
+        
+        function setLoggedIn(status) {
+            localStorage.setItem(loginKey, status ? 'true' : 'false');
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            var div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function setLoading(isLoading, elId) {
+            var el = document.getElementById(elId);
+            if (!el) return;
+            if (isLoading) {
+                el.disabled = true;
+                el.dataset.originalText = el.textContent;
+                el.textContent = '加载中...';
+            } else {
+                el.disabled = false;
+                if (el.dataset.originalText) {
+                    el.textContent = el.dataset.originalText;
+                }
+            }
+        }
+        
+        function showError(msg, elId) {
+            var el = document.getElementById(elId || 'login-error');
+            if (!el) return;
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+        
+        function showSuccess(msg) {
+            var el = document.getElementById('success-message');
+            if (!el) return;
+            el.textContent = msg;
+            el.style.display = 'block';
+            setTimeout(() => el.style.display = 'none', 3000);
+        }
+        
+        function showPage(page) {
+            document.getElementById('menu-panel').classList.add('hidden');
+            document.getElementById('friend-panel').classList.add('hidden');
+            document.getElementById('password-panel').classList.add('hidden');
+            document.getElementById('settings-panel').classList.add('hidden');
+            document.getElementById('article-panel').classList.add('hidden');
+            
+            if (page === 'menu') {
+                document.getElementById('menu-panel').classList.remove('hidden');
+            } else if (page === 'friend') {
+                document.getElementById('friend-panel').classList.remove('hidden');
+                loadFriends();
+            } else if (page === 'password') {
+                document.getElementById('password-panel').classList.remove('hidden');
+            } else if (page === 'settings') {
+                document.getElementById('settings-panel').classList.remove('hidden');
+                loadSettings();
+            } else if (page === 'article') {
+                document.getElementById('article-panel').classList.remove('hidden');
+                switchTab('categories');
+            }
+        }
+        
+        function render() {
+            if (!isLoggedIn()) {
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('admin-panel').classList.add('hidden');
+            } else {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('admin-panel').classList.remove('hidden');
+                showPage('menu');
+            }
+        }
+        
+        async function login() {
+            var passwordEl = document.getElementById('login-password');
+            if (!passwordEl) return;
+            
+            var password = passwordEl.value;
+            if (!password) {
+                showError('请输入密码', 'login-error');
+                return;
+            }
+            
+            var btn = document.querySelector('#login-form button');
+            setLoading(true, btn);
+            
+            try {
+                var res = await fetch(apiBase + '/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: password })
+                });
+                var result = await res.json();
+                
+                if (result.success) {
+                    localStorage.setItem(tokenKey, result.token);
+                    apiToken = result.token;
+                    setLoggedIn(true);
+                    passwordEl.value = '';
+                    render();
+                } else {
+                    showError(result.message || '密码错误，请重试', 'login-error');
+                }
+            } catch (error) {
+                showError('登录失败：' + error.message, 'login-error');
+            } finally {
+                setLoading(false, btn);
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem(tokenKey);
+            apiToken = '';
+            setLoggedIn(false);
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('admin-panel').classList.add('hidden');
+        }
+        
+        function showConfirm(message, callback) {
+            document.getElementById('confirm-message').textContent = message;
+            window.confirmCallback = callback;
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+        
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+            window.confirmCallback = null;
+        }
+        
+        document.getElementById('confirm-ok-btn').addEventListener('click', function() {
+            if (window.confirmCallback) {
+                window.confirmCallback();
+            }
+            closeConfirmModal();
+        });
+        
+        var rebuildCheckInterval = null;
+        
+        async function rebuild() {
+            try {
+                var response = await fetch(apiBase + '/rebuild', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + apiToken }
+                });
+                var result = await response.json();
+                if (result.success) {
+                    showSuccess(result.message);
+                    startRebuildCheck();
+                } else {
+                    showError(result.message || '构建失败', 'login-error');
+                }
+            } catch (error) {
+                showError('构建失败：' + error.message, 'login-error');
+            }
+        }
+        
+        async function checkRebuildStatus() {
+            try {
+                var response = await fetch(apiBase + '/rebuild-status', {
+                    headers: { 'Authorization': 'Bearer ' + apiToken }
+                });
+                var result = await response.json();
+                if (result.success) {
+                    var status = result.data;
+                    if (status.building) {
+                        showSuccess('构建中: ' + status.message);
+                    } else if (status.success === true) {
+                        showSuccess(status.message);
+                        stopRebuildCheck();
+                    } else if (status.success === false) {
+                        showError('构建失败: ' + status.message, 'login-error');
+                        stopRebuildCheck();
+                    }
+                }
+            } catch (error) {
+                console.error('检查构建状态失败:', error);
+            }
+        }
+        
+        function startRebuildCheck() {
+            if (rebuildCheckInterval) return;
+            rebuildCheckInterval = setInterval(checkRebuildStatus, 5000);
+        }
+        
+        function stopRebuildCheck() {
+            if (rebuildCheckInterval) {
+                clearInterval(rebuildCheckInterval);
+                rebuildCheckInterval = null;
+            }
+        }
+        
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('categories-panel').classList.add('hidden');
+            document.getElementById('posts-panel').classList.add('hidden');
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            var buttons = document.querySelectorAll('.tab-btn');
+            if (tab === 'categories' && buttons[0]) {
+                buttons[0].classList.add('active');
+            } else if (tab === 'posts' && buttons[1]) {
+                buttons[1].classList.add('active');
+            }
+            
+            if (tab === 'categories') {
+                document.getElementById('categories-panel').classList.remove('hidden');
+                loadCategories();
+            } else if (tab === 'posts') {
+                document.getElementById('posts-panel').classList.remove('hidden');
+                loadPosts();
+                loadCategorySelect();
+            }
+        }
+        
+        function loadSettings() {
+            fetch(apiBase + '/settings', {
+                headers: { 'Authorization': 'Bearer ' + apiToken }
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    document.getElementById('s3-domain').value = result.data.s3Domain || '';
+                    document.getElementById('default-avatar').value = result.data.defaultAvatar || '';
+                    document.getElementById('default-author').value = result.data.defaultAuthor || 'Sora.';
+                    // 更新默认头像 URL
+                    updateDefaultAvatar();
+                    // 更新文章编辑器中的默认值
+                    document.getElementById('post-author').value = result.data.defaultAuthor || 'Sora.';
+                    var defaultAvatar = document.getElementById('default-avatar').value;
+                    document.getElementById('post-avatar').value = defaultAvatar;
+                }
+            })
+            .catch(error => showError('加载设置失败：' + error.message, 'settings-error'));
+        }
+        
+        function saveSettings() {
+            var settings = {
+                s3Domain: document.getElementById('s3-domain').value,
+                defaultAvatar: document.getElementById('default-avatar').value,
+                defaultAuthor: document.getElementById('default-author').value
+            };
+            
+            fetch(apiBase + '/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiToken },
+                body: JSON.stringify(settings)
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    showSuccess('设置保存成功');
+                } else {
+                    showError('设置保存失败：' + (result.message || '未知错误'), 'settings-error');
+                }
+            })
+            .catch(error => showError('设置保存失败：' + error.message, 'settings-error'));
+        }
+        
+        function loadCategories() {
+            fetch(apiBase + '/categories', {
+                headers: { 'Authorization': 'Bearer ' + apiToken }
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    categories = result.data;
+                    renderCategories();
+                }
+            })
+            .catch(error => showError('加载栏目失败：' + error.message, 'article-error'));
+        }
+        
+        function loadPosts() {
+            var category = document.getElementById('post-category-select').value;
+            var url = apiBase + '/posts';
+            if (category) {
+                url += '?category=' + category;
+            }
+            
+            fetch(url, {
+                headers: { 'Authorization': 'Bearer ' + apiToken }
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    posts = result.data;
+                    renderPosts();
+                }
+            })
+            .catch(error => showError('加载文章失败：' + error.message, 'article-error'));
+        }
+        
+        function loadCategorySelect() {
+            var select = document.getElementById('post-category-select');
+            select.innerHTML = '<option value="">全部</option>';
+            categories.forEach(cat => {
+                var option = document.createElement('option');
+                option.value = cat.name;
+                option.textContent = cat.label;
+                select.appendChild(option);
+            });
+        }
+        
+        function renderCategories() {
+            var container = document.getElementById('category-list');
+            if (!container) return;
+            
+            if (categories.length === 0) {
+                container.innerHTML = '<div class="empty">暂无栏目</div>';
+                return;
+            }
+            
+            container.innerHTML = categories.map((cat, index) => `
+                <div class="card">
+                    <div class="card-content">
+                        <h3>${escapeHtml(cat.label)}</h3>
+                        <p class="card-meta">文件夹名: ${escapeHtml(cat.name)}</p>
+                        <p class="card-meta">文章数: ${cat.postCount || 0}</p>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-small" onclick="editCategory(${index})">编辑</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteCategory(${index})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderPosts() {
+            var container = document.getElementById('post-list');
+            if (!container) return;
+            
+            if (posts.length === 0) {
+                container.innerHTML = '<div class="empty">暂无文章</div>';
+                return;
+            }
+            
+            container.innerHTML = posts.map((post, index) => `
+                <div class="card">
+                    <div class="card-content">
+                        <h3>${escapeHtml(post.title)}${post.pin ? ' <span style="background-color: #ff6b6b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px;">置顶</span>' : ''}</h3>
+                        <p class="card-meta">${escapeHtml(post.date)}</p>
+                        <p class="card-desc">${escapeHtml(post.description || '')}</p>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-small" onclick="editPost(${index})">编辑</button>
+                        <button class="btn btn-danger btn-small" onclick="deletePost(${index})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function showAddCategoryModal() {
+            editingCategory = null;
+            document.getElementById('category-modal-title').textContent = '添加栏目';
+            document.getElementById('category-order').value = '';
+            document.getElementById('category-name').value = '';
+            document.getElementById('category-label').value = '';
+            document.getElementById('category-modal').classList.remove('hidden');
+        }
+        
+        function editCategory(index) {
+            editingCategory = categories[index];
+            document.getElementById('category-modal-title').textContent = '编辑栏目';
+            document.getElementById('category-order').value = editingCategory.order || 0;
+            document.getElementById('category-name').value = editingCategory.name;
+            document.getElementById('category-label').value = editingCategory.label;
+            document.getElementById('category-modal').classList.remove('hidden');
+        }
+        
+        function saveCategory() {
+            var order = parseInt(document.getElementById('category-order').value) || 0;
+            var name = document.getElementById('category-name').value.trim();
+            var label = document.getElementById('category-label').value.trim();
+            
+            if (!name || !label) {
+                showError('请填写完整信息', 'article-error');
+                return;
+            }
+            
+            var data = { order: order, name: name, label: label };
+            var url = apiBase + '/categories';
+            var method = 'POST';
+            
+            if (editingCategory) {
+                url += '/' + editingCategory.name;
+                method = 'PUT';
+            }
+            
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiToken },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    showSuccess(editingCategory ? '栏目更新成功' : '栏目添加成功');
+                    document.getElementById('category-modal').classList.add('hidden');
+                    loadCategories();
+                } else {
+                    showError(result.message, 'article-error');
+                }
+            })
+            .catch(error => showError('保存失败：' + error.message, 'article-error'));
+        }
+        
+        function deleteCategory(index) {
+            var cat = categories[index];
+            showConfirm('确定要删除栏目 "' + cat.label + '" 吗？', function() {
+                fetch(apiBase + '/categories/' + cat.name, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + apiToken }
+                })
+                .then(res => res.json())
+                .then(result => {
+                    if (result.success) {
+                        showSuccess('栏目删除成功');
+                        loadCategories();
+                    } else {
+                        showError(result.message, 'article-error');
+                    }
+                })
+                .catch(error => showError('删除失败：' + error.message, 'article-error'));
+            });
+        }
+        
+        function showAddPostModal() {
+            editingPost = null;
+            document.getElementById('post-modal-title').textContent = '添加文章';
+            document.getElementById('post-title').value = '';
+            document.getElementById('post-slug').value = '';
+            document.getElementById('post-banner').value = '';
+            document.getElementById('post-description').value = '';
+            // 设置发布者默认值
+            var defaultAuthor = document.getElementById('default-author').value || 'Sora.';
+            document.getElementById('post-author').value = defaultAuthor;
+            // 设置发布者用户 ID 默认值
+            document.getElementById('post-author-id').value = '1';
+            // 设置头像 URL 默认值
+            var s3Domain = document.getElementById('s3-domain').value.trim();
+            var defaultAvatar = document.getElementById('default-avatar').value;
+            var fullAvatarUrl = '';
+            if (s3Domain && defaultAvatar) {
+                s3Domain = s3Domain.replace(/\/$/, '');
+                fullAvatarUrl = s3Domain + defaultAvatar;
+            }
+            document.getElementById('post-avatar').value = fullAvatarUrl;
+            // 设置作者主页默认值
+            document.getElementById('post-author-homepage').value = 'https://your-website.com';
+            // 设置是否置顶默认值
+            document.getElementById('post-pin').checked = false;
+            document.getElementById('post-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('post-content').value = '';
+            
+            var select = document.getElementById('post-category');
+            select.innerHTML = '<option value="">请选择栏目</option>';
+            categories.forEach(cat => {
+                var option = document.createElement('option');
+                option.value = cat.name;
+                option.textContent = cat.label;
+                select.appendChild(option);
+            });
+            
+            document.getElementById('post-modal').classList.remove('hidden');
+        }
+        
+        // 格式化日期为 yyyy-MM-dd 格式
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            var parts = dateString.split('-');
+            if (parts.length !== 3) return dateString;
+            var year = parts[0];
+            var month = parts[1].padStart(2, '0');
+            var day = parts[2].padStart(2, '0');
+            return year + '-' + month + '-' + day;
+        }
+
+        function editPost(index) {
+            editingPost = posts[index];
+            // 调试信息：打印 editingPost 对象
+            console.log('Editing post:', editingPost);
+            document.getElementById('post-modal-title').textContent = '编辑文章';
+            document.getElementById('post-title').value = editingPost.title;
+            document.getElementById('post-slug').value = editingPost.slug || '';
+            document.getElementById('post-banner').value = editingPost.banner || '';
+            document.getElementById('post-description').value = editingPost.description || '';
+            // 使用文章的原始发布者数据
+            document.getElementById('post-author').value = editingPost.authorName || editingPost.author || 'Sora.';
+            document.getElementById('post-author-id').value = editingPost.authorUid || editingPost.authorId || editingPost.author_id || '1';
+            // 使用正确的字段名获取头像 URL
+            var avatarUrl = editingPost.authorAvatar || editingPost.avatar || editingPost.avatarUrl || editingPost.author_avatar || '';
+            document.getElementById('post-avatar').value = avatarUrl;
+            console.log('Avatar URL:', avatarUrl);
+            // 使用文章的原始作者主页数据
+            document.getElementById('post-author-homepage').value = editingPost.authorHomepage || 'https://your-website.com';
+            // 使用文章的原始置顶数据
+            document.getElementById('post-pin').checked = editingPost.pin || false;
+            document.getElementById('post-date').value = formatDate(editingPost.date);
+            document.getElementById('post-content').value = editingPost.content || '';
+            
+            var select = document.getElementById('post-category');
+            select.innerHTML = '<option value="">请选择栏目</option>';
+            categories.forEach(cat => {
+                var option = document.createElement('option');
+                option.value = cat.name;
+                option.textContent = cat.label;
+                if (cat.name === editingPost.category) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+            
+            document.getElementById('post-modal').classList.remove('hidden');
+        }
+        
+        function savePost() {
+            var title = document.getElementById('post-title').value.trim();
+            var slug = document.getElementById('post-slug').value.trim();
+            var category = document.getElementById('post-category').value.trim();
+            var banner = document.getElementById('post-banner').value.trim();
+            var description = document.getElementById('post-description').value.trim();
+            var author = document.getElementById('post-author').value.trim();
+            var authorId = document.getElementById('post-author-id').value.trim();
+            var avatar = document.getElementById('post-avatar').value.trim();
+            var authorHomepage = document.getElementById('post-author-homepage').value.trim();
+            var pin = document.getElementById('post-pin').checked;
+            var date = document.getElementById('post-date').value.trim();
+            var content = document.getElementById('post-content').value.trim();
+            
+            if (!title || !category || !date || !slug) {
+                showError('请填写必填信息', 'article-error');
+                return;
+            }
+            
+            var data = {
+                title: title,
+                slug: slug,
+                category: category,
+                banner: banner,
+                description: description,
+                authorName: author,
+                authorUid: authorId,
+                authorAvatar: avatar,
+                authorHomepage: authorHomepage || 'https://your-website.com',
+                pin: pin,
+                date: date,
+                content: content
+            };
+            
+            var url = apiBase + '/posts';
+            var method = 'POST';
+            
+            if (editingPost) {
+                url += '/' + editingPost.slug;
+                method = 'PUT';
+            }
+            
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiToken },
+                body: JSON.stringify(data)
+            })
+            .then(res => res.json())
+            .then(result => {
+                if (result.success) {
+                    showSuccess(editingPost ? '文章更新成功' : '文章添加成功');
+                    document.getElementById('post-modal').classList.add('hidden');
+                    loadPosts();
+                } else {
+                    showError(result.message, 'article-error');
+                }
+            })
+            .catch(error => showError('保存失败：' + error.message, 'article-error'));
+        }
+        
+        function deletePost(index) {
+            var post = posts[index];
+            showConfirm('确定要删除文章 "' + post.title + '" 吗？', function() {
+                fetch(apiBase + '/posts/' + post.category + '/' + post.slug, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': 'Bearer ' + apiToken }
+                })
+                .then(res => res.json())
+                .then(result => {
+                    if (result.success) {
+                        showSuccess('文章删除成功');
+                        loadPosts();
+                    } else {
+                        showError(result.message, 'article-error');
+                    }
+                })
+                .catch(error => showError('删除失败：' + error.message, 'article-error'));
+            });
+        }
+        
+
+        function changePassword() {
+            var newPassword = document.getElementById('new-password').value;
+            var confirmPassword = document.getElementById('confirm-password').value;
+            
+            if (newPassword.length < 6) {
+                showError('新密码长度至少为 6 位', 'login-error');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showError('两次输入的密码不一致', 'login-error');
+                return;
+            }
+            
+            setStoredPassword(newPassword);
+            showSuccess('密码修改成功');
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
+            showPage('menu');
+        }
+        
+        async function loadFriends() {
+            try {
+                var res = await fetch(apiBase + '/friends', {
+                    headers: { 'Authorization': 'Bearer ' + apiToken }
+                });
+                var result = await res.json();
+                if (result.success) {
+                    friends = result.data;
+                    renderFriends();
+                } else {
+                    showError('加载失败：' + (result.message || '未知错误'), 'friend-error');
+                }
+            } catch (error) {
+                showError('加载失败：' + error.message, 'friend-error');
+            }
+        }
+        
+        function renderFriends() {
+            var container = document.getElementById('friend-list');
+            if (!container) return;
+            
+            if (friends.length === 0) {
+                container.innerHTML = '<div class="empty">暂无友链</div>';
+                return;
+            }
+            container.innerHTML = friends.map(function(f, i) {
+                return '<div class="friend-card">' +
+                    '<img src="' + escapeHtml(f.avatar) + '" alt="' + escapeHtml(f.name) + '" class="friend-avatar" onerror="this.src=\'/favicon.ico\'">' +
+                    '<div class="friend-info">' +
+                    '<div class="friend-name">' + escapeHtml(f.name) + '</div>' +
+                    '<div class="friend-label">' + escapeHtml(f.label) + '</div>' +
+                    '<a href="' + escapeHtml(f.link) + '" target="_blank" class="friend-link">' + escapeHtml(f.link) + '</a>' +
+                    '</div>' +
+                    '<div class="friend-actions">' +
+                    '<button class="btn btn-sm" onclick="editFriend(' + i + ')">编辑</button>' +
+                    '<button class="btn btn-sm btn-danger" onclick="deleteFriend(' + i + ')">删除</button>' +
+                    '</div></div>';
+            }).join('');
+        }
+        
+        function showAddModal() {
+            editingIndex = -1;
+            document.getElementById('modal-title').textContent = '添加友链';
+            document.getElementById('friend-name').value = '';
+            document.getElementById('friend-avatar').value = '';
+            document.getElementById('friend-label').value = '';
+            document.getElementById('friend-link').value = '';
+            document.getElementById('friend-modal').classList.remove('hidden');
+        }
+        
+        function editFriend(index) {
+            editingIndex = index;
+            var f = friends[index];
+            document.getElementById('modal-title').textContent = '编辑友链';
+            document.getElementById('friend-name').value = f.name;
+            document.getElementById('friend-avatar').value = f.avatar;
+            document.getElementById('friend-label').value = f.label;
+            document.getElementById('friend-link').value = f.link;
+            document.getElementById('friend-modal').classList.remove('hidden');
+        }
+        
+        function closeModal() {
+            document.getElementById('friend-modal').classList.add('hidden');
+        }
+        
+        async function saveFriend() {
+            var nameEl = document.getElementById('friend-name');
+            var avatarEl = document.getElementById('friend-avatar');
+            var labelEl = document.getElementById('friend-label');
+            var linkEl = document.getElementById('friend-link');
+            
+            if (!nameEl || !avatarEl || !labelEl || !linkEl) {
+                showError('表单元素未找到', 'friend-error');
+                return;
+            }
+            
+            var name = nameEl.value.trim();
+            var avatar = avatarEl.value.trim();
+            var label = labelEl.value.trim();
+            var link = linkEl.value.trim();
+            
+            if (!name || !avatar || !label || !link) {
+                showError('请填写所有字段', 'friend-error');
+                return;
+            }
+            
+            if (name.length > 100) {
+                showError('名称不能超过100个字符', 'friend-error');
+                return;
+            }
+            
+            if (label.length > 200) {
+                showError('标签不能超过200个字符', 'friend-error');
+                return;
+            }
+            
+            try {
+                new URL(link);
+            } catch (e) {
+                showError('请输入有效的URL', 'friend-error');
+                return;
+            }
+            
+            var data = { name: name, avatar: avatar, label: label, link: link };
+            
+            if (editingIndex === -1) {
+                friends.push(data);
+            } else {
+                friends[editingIndex] = data;
+            }
+            
+            try {
+                var res = await fetch(apiBase + '/friends', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + apiToken
+                    },
+                    body: JSON.stringify({ friends: friends })
+                });
+                var result = await res.json();
+                if (result.success) {
+                    showSuccess(result.message);
+                    closeModal();
+                    renderFriends();
+                } else {
+                    showError(result.message || '保存失败', 'friend-error');
+                }
+            } catch (error) {
+                showError('保存失败：' + error.message, 'friend-error');
+            }
+        }
+        
+        function deleteFriend(index) {
+            showConfirm('确定要删除这个友链吗？', function() {
+                friends.splice(index, 1);
+                fetch(apiBase + '/friends', {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + apiToken
+                    },
+                    body: JSON.stringify({ friends: friends })
+                })
+                .then(function(res) { return res.json(); })
+                .then(function(result) {
+                    if (result.success) {
+                        showSuccess(result.message);
+                        renderFriends();
+                    } else {
+                        showError(result.message || '删除失败', 'friend-error');
+                    }
+                })
+                .catch(function(error) {
+                    showError('删除失败：' + error.message, 'friend-error');
+                });
+            });
+        }
+        
+        function exportJson() {
+            var blob = new Blob([JSON.stringify(friends, null, 2)], { type: 'application/json' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url;
+            a.download = 'friends.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            showSuccess('导出成功');
+        }
+        
+        function showImportConfirm() {
+            showConfirm('导入将覆盖现有配置，确定要继续吗？', function() {
+                document.getElementById('import-file').click();
+            });
+        }
+        
+        function handleImportFile(event) {
+            var file = event.target.files[0];
+            if (!file) return;
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    var data = JSON.parse(e.target.result);
+                    if (!Array.isArray(data)) {
+                        showError('JSON 格式错误：必须是数组', 'friend-error');
+                        return;
+                    }
+                    for (var i = 0; i < data.length; i++) {
+                        var f = data[i];
+                        if (!f.name || !f.avatar || !f.label || !f.link) {
+                            showError('第 ' + (i + 1) + ' 项缺少必填字段', 'friend-error');
+                            return;
+                        }
+                    }
+                    friends = data;
+                    fetch(apiBase + '/friends', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ friends: friends })
+                    })
+                    .then(function(res) { return res.json(); })
+                    .then(function(result) {
+                        if (result.success) {
+                            showSuccess(result.message);
+                            renderFriends();
+                        } else {
+                            showError(result.message, 'friend-error');
+                        }
+                    })
+                    .catch(function(error) {
+                        showError('导入失败：' + error.message, 'friend-error');
+                    });
+                } catch (error) {
+                    showError('JSON 格式错误：' + error.message, 'friend-error');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        
+        document.getElementById('login-password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
+        
+        document.getElementById('confirm-password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') changePassword();
+        });
+        
+        window.addEventListener('load', function() {
+            render();
+        });
+    </script>
+</body>
+</html>

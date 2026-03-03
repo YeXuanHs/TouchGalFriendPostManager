@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoraGal - Website Under Maintenance</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 700px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.4s ease-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.logo { text-align: center; margin-bottom: 20px; position: relative; }
+.logo img { 
+    width: 80px; 
+    height: 80px; 
+    border-radius: 50%; 
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    animation: pulse 2s infinite, ripple 2s infinite;
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+@keyframes ripple {
+    0% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7), 0 4px 15px rgba(0,0,0,0.2); }
+    50% { box-shadow: 0 0 0 15px rgba(102, 126, 234, 0), 0 4px 15px rgba(0,0,0,0.2); }
+    100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0), 0 4px 15px rgba(0,0,0,0.2); }
+}
+.title {
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.subtitle { font-size: 16px; color: #64748b; text-align: center; margin-bottom: 30px; }
+.status-box {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 25px;
+}
+.status-box span { font-size: 20px; font-weight: 700; color: #92400e; vertical-align: middle; }
+.status-box .icon { margin-right: 8px; font-size: 24px; }
+.info-box {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+.info-title { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 12px; }
+.info-text { font-size: 14px; color: #64748b; line-height: 1.7; }
+.btn-group { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 30px; }
+.btn {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102,126,234,0.4); }
+.lang-switch { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; }
+.lang-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: rgba(255,255,255,0.9);
+    color: #64748b;
+    border: none;
+    transition: all 0.3s ease;
+}
+.lang-btn:hover { background: white; }
+.lang-btn.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+.lang-btn { opacity: 0.6; }
+.lang-btn.active { opacity: 1; }
+.lang-btn .lang-active { color: white; font-weight: bold; }
+.lang-btn:not(.active) .lang-active { display: none; }
+.en-content, .cn-content { display: none; }
+.show-en .en-content { display: block; }
+.show-cn .cn-content { display: block; }
+</style>
+</head>
+<body>
+<div class="lang-switch">
+    <button class="lang-btn active" id="btn-en">English</button>
+    <button class="lang-btn" id="btn-cn">Chinese(Simple)</button>
+</div>
+<div id="main" class="container show-en">
+    <div class="logo"><img src="/favicon.ico" alt="Logo" onerror="this.style.display='none'"></div>
+    <h1 class="title">SoraGal</h1>
+    <p class="subtitle en-content">Galgame Sharing Heaven!</p>
+    <p class="subtitle cn-content">Galgame分享的天！</p>
+    
+    <div class="status-box">
+        <span class="en-content"><span class="icon">🚧</span>Website Under Maintenance</span>
+        <span class="cn-content"><span class="icon">🚧</span>网站维护中</span>
+    </div>
+    
+    <div class="info-box">
+        <div class="info-title en-content">📢 System Update</div>
+        <div class="info-title cn-content">📢 系统更新</div>
+        <div class="info-text en-content">The website is undergoing system updates and optimizations to provide you with a better experience. This process is expected to take approximately 30 minutes. Some features may be temporarily unavailable during update. We apologize for any inconvenience.</div>
+        <div class="info-text cn-content">网站正在进行系统更新和优化，以为您提供更好的体验。此过程预计需要约 30 分钟。更新期间部分功能可能暂时不可用，给您带来的不便敬请谅解。</div>
+    </div>
+    
+    <div class="info-box">
+        <div class="info-title en-content">💡 Friendly Reminder</div>
+        <div class="info-title cn-content">💡 温馨提示</div>
+        <div class="info-text en-content">After update is complete, website will provide a better user experience and more features. Please visit again later, thank you for your patience and support.</div>
+        <div class="info-text cn-content">更新完成后，网站将提供更好的用户体验和更多功能。请稍后访问，感谢您的耐心与支持。</div>
+    </div>
+    
+    <div class="btn-group">
+        <a href="https://your-website.com" class="btn" target="_blank" id="nav-btn">🌐 Navigation</a>
+        <a href="https://your-qq-group-link.com" class="btn" target="_blank" id="qq-btn">💬 QQ Group</a>
+    </div>
+</div>
+<script>
+var main = document.getElementById('main');
+var btnEn = document.getElementById('btn-en');
+var btnCn = document.getElementById('btn-cn');
+var navBtn = document.getElementById('nav-btn');
+var qqBtn = document.getElementById('qq-btn');
+
+btnEn.addEventListener('click', function() {
+    main.className = 'container show-en';
+    btnEn.className = 'lang-btn active';
+    btnCn.className = 'lang-btn';
+    btnEn.innerHTML = 'English';
+    btnCn.innerHTML = 'Chinese(Simple)';
+    navBtn.innerHTML = '🌐 Navigation';
+    qqBtn.innerHTML = '💬 QQ Group';
+    document.documentElement.lang = 'en';
+    document.title = 'SoraGal - Website Under Maintenance';
+});
+
+btnCn.addEventListener('click', function() {
+    main.className = 'container show-cn';
+    btnCn.className = 'lang-btn active';
+    btnEn.className = 'lang-btn';
+    btnEn.innerHTML = '英文';
+    btnCn.innerHTML = '简体中文';
+    navBtn.innerHTML = '🌐 导航页';
+    qqBtn.innerHTML = '💬 QQ群';
+    document.documentElement.lang = 'zh-CN';
+    document.title = 'SoraGal - 网站维护中';
+});
+</script>
+</body>
+</html>
