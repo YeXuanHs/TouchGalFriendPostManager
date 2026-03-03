@@ -1,0 +1,2 @@
+# TouchGalFriendPostManager
+TouchGal站外管理器 - 专为TouchGal项目设计的独立友链和文章管理工具，补充了TouchGal后台缺失的友链管理和文章编辑功能。提供直观的Web界面进行友链的增删改查、文章的发布和管理，同时附带精美的维护停机页面。支持S3存储集成，可自定义头像、作者信息等，是TouchGal项目的完美补充工具。需搭配kun-touchgal-next项目使用。
